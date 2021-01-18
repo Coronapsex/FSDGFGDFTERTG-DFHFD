@@ -1,0 +1,54 @@
+local ME = game.Players.LocalPlayer
+	local LOOP_NUM = string.sub(cmdbar.Text, 4)
+	local tools, pos, pos1 = {}, ME.Character.HumanoidRootPart.CFrame, CFrame.new(math.random(-2e5, 2e5), 2e5, math.random(-2e5, 2e5))
+	for _ = 1, tonumber(tonumber(LOOP_NUM) or 1) do
+		ME.Character.HumanoidRootPart.CFrame = pos1
+		wait(.2)
+		ME.Character.HumanoidRootPart.Anchored = true
+		wait(.2)
+		ME.Character.Humanoid:UnequipTools()
+		for _, v in pairs(ME:FindFirstChildOfClass("Backpack"):GetChildren()) do
+			if v:IsA("Tool") and v:FindFirstChild("Handle") then
+				v.Parent = ME.Character
+				v.Handle.Anchored = true
+				v.Parent = workspace
+				table.insert(tools, v)
+			end
+		end
+		ME.Character:FindFirstChildOfClass("Humanoid"):ChangeState(15)
+		ME.CharacterAdded:Wait():WaitForChild("HumanoidRootPart").CFrame = pos
+	end
+	if type(firetouchinterest) == "function" then
+		for _, v in pairs(tools) do
+			pcall(coroutine.wrap(function()
+				v.Handle.Anchored = false
+				firetouchinterest(v.Handle, ME.Character:WaitForChild("HumanoidRootPart"), 0)
+				repeat
+					wait()
+				until v.Parent == ME.Character
+				firetouchinterest(v.Handle, ME.Character.HumanoidRootPart, 1)
+			end))
+		end
+	else
+		ME.Character.HumanoidRootPart.Anchored = true
+		wait(.15)
+		for _, v in pairs(tools) do
+			spawn(function()
+				v.Handle.Anchored = false
+				while v.Parent ~= ME.Character and game:GetService("RunService").RenderStepped:Wait() do
+					v.Handle.CFrame = ME.Character:WaitForChild("HumanoidRootPart").CFrame
+				end
+			end)
+		end
+		wait((function(num)
+			local e = 0
+			for _ = 1, num do
+				e = e + .1
+			end
+			return e
+		end)(#tools))
+		ME.Character.HumanoidRootPart.Anchored = false
+	
+	
+	
+	end
